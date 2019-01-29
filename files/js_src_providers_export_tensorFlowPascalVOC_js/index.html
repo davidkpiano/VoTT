@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - js-src/providers/export/tensorFlowPascalVOC.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>js-src/providers/export/tensorFlowPascalVOC.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">73.41</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">285</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">77.31</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">3.94</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var __awaiter = (this &amp;&amp; this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator[&quot;throw&quot;](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import _ from &quot;lodash&quot;;
+import { ExportProvider, ExportAssetState } from &quot;./exportProvider&quot;;
+import { AssetState, RegionType } from &quot;../../models/applicationState&quot;;
+import { AssetService } from &quot;../../services/assetService&quot;;
+import Guard from &quot;../../common/guard&quot;;
+import HtmlFileReader from &quot;../../common/htmlFileReader&quot;;
+import axios from &quot;axios&quot;;
+import { itemTemplate, annotationTemplate, objectTemplate } from &quot;./tensorFlowPascalVOC/tensorFlowPascalVOCTemplates&quot;;
+import { interpolate } from &quot;../../common/strings&quot;;
+/**
+ * @name - TFPascalVOC Json Export Provider
+ * @description - Exports a project into a single JSON file that include all configured assets
+ */
+export class TFPascalVOCJsonExportProvider extends ExportProvider {
+    constructor(project, options) {
+        super(project, options);
+        this.imagesInfo = new Map();
+        Guard.null(options);
+    }
+    /**
+     * Export project to TensorFlow PascalVOC
+     */
+    export() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const assetService = new AssetService(this.project);
+            let predicate = null;
+            switch (this.options.assetState) {
+                case ExportAssetState.All:
+                    predicate = (asset) =&gt; true;
+                    break;
+                case ExportAssetState.Visited:
+                    predicate = (asset) =&gt; asset.state === AssetState.Visited || asset.state === AssetState.Tagged;
+                    break;
+                case ExportAssetState.Tagged:
+                    predicate = (asset) =&gt; asset.state === AssetState.Tagged;
+                    break;
+            }
+            const loadAssetTasks = _.values(this.project.assets)
+                .filter(predicate)
+                .map((asset) =&gt; assetService.getAssetMetadata(asset));
+            const allAssets = yield Promise.all(loadAssetTasks);
+            const exportObject = Object.assign({}, this.project);
+            exportObject.assets = _.keyBy(allAssets, (assetMetadata) =&gt; assetMetadata.asset.id);
+            // Create Export Folder
+            const exportFolderName = `${this.project.name.replace(&quot; &quot;, &quot;-&quot;)}-TFPascalVOC-export`;
+            yield this.storageProvider.createContainer(exportFolderName);
+            yield this.exportImages(exportFolderName, allAssets);
+            yield this.exportPBTXT(exportFolderName, this.project);
+            yield this.exportAnnotations(exportFolderName, allAssets);
+            // TODO: Make testSplit &amp;&amp; exportUnassignedTags optional parameter in the UI Exporter configuration
+            yield this.exportImageSets(exportFolderName, allAssets, this.project.tags, 0.2, true);
+        });
+    }
+    exportImages(exportFolderName, allAssets) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Create JPEGImages Sub Folder
+            const jpegImagesFolderName = `${exportFolderName}/JPEGImages`;
+            yield this.storageProvider.createContainer(jpegImagesFolderName);
+            const allImageExports = allAssets.map((element) =&gt; {
+                return this.exportSingleImage(jpegImagesFolderName, element);
+            });
+            try {
+                yield Promise.all(allImageExports);
+            }
+            catch (err) {
+                console.log(err);
+            }
+        });
+    }
+    exportSingleImage(jpegImagesFolderName, element) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) =&gt; {
+                const imageFileName = `${jpegImagesFolderName}/${element.asset.name}`;
+                // Get image
+                axios.get(element.asset.path, {
+                    responseType: &quot;arraybuffer&quot;,
+                })
+                    .then((response) =&gt; __awaiter(this, void 0, void 0, function* () {
+                    // Get buffer
+                    const buffer = new Buffer(response.data);
+                    // Write Binary
+                    yield this.storageProvider.writeBinary(imageFileName, buffer);
+                    // Get Array of all Box shaped tag for the Asset
+                    const tagObjects = this.getAssetTagArray(element);
+                    const imageInfo = {
+                        width: element.asset.size ? element.asset.size.width : 0,
+                        height: element.asset.size ? element.asset.size.height : 0,
+                        objects: tagObjects,
+                    };
+                    this.imagesInfo.set(element.asset.name, imageInfo);
+                    if (!element.asset.size || element.asset.size.width === 0 || element.asset.size.height === 0) {
+                        yield this.updateImageSizeInfo(response.data, imageFileName, element.asset.name);
+                    }
+                    resolve();
+                }))
+                    .catch((err) =&gt; {
+                    // Ignore the error at the moment
+                    // TODO: Refactor ExportProvider abstract class export() method
+                    //       to return Promise&lt;object&gt; with an object containing
+                    //       the number of files succesfully exported out of total
+                    console.log(`Error downloading ${imageFileName} - ${err}`);
+                    resolve();
+                    // eject(err);
+                });
+            });
+        });
+    }
+    getAssetTagArray(element) {
+        const tagObjects = [];
+        element.regions.filter((region) =&gt; (region.type === RegionType.Rectangle ||
+            region.type === RegionType.Square) &amp;&amp;
+            region.points.length === 2)
+            .forEach((region) =&gt; {
+            region.tags.forEach((tag) =&gt; {
+                const objectInfo = {
+                    name: tag.name,
+                    xmin: region.points[0].x,
+                    ymin: region.points[0].y,
+                    xmax: region.points[1].x,
+                    ymax: region.points[1].y,
+                };
+                tagObjects.push(objectInfo);
+            });
+        });
+        return tagObjects;
+    }
+    updateImageSizeInfo(imageBuffer, imageFileName, assetName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Get Base64
+            const image64 = btoa(new Uint8Array(imageBuffer).
+                reduce((data, byte) =&gt; data + String.fromCharCode(byte), &quot;&quot;));
+            if (image64.length &lt; 10) {
+                // Ignore the error at the moment
+                // TODO: Refactor ExportProvider abstract class export() method
+                //       to return Promise&lt;object&gt; with an object containing
+                //       the number of files succesfully exported out of total
+                console.log(`Image not valid ${imageFileName}`);
+            }
+            else {
+                const assetProps = yield HtmlFileReader.readAssetAttributesWithBuffer(image64);
+                const imageInfo = this.imagesInfo.get(assetName);
+                if (imageInfo &amp;&amp; assetProps) {
+                    imageInfo.width = assetProps.width;
+                    imageInfo.height = assetProps.height;
+                }
+                else {
+                    console.log(`imageInfo for element ${assetName} not found (${assetProps})`);
+                }
+            }
+        });
+    }
+    exportPBTXT(exportFolderName, project) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (project.tags &amp;&amp; project.tags.length &gt; 0) {
+                // Save pascal_label_map.pbtxt
+                const pbtxtFileName = `${exportFolderName}/pascal_label_map.pbtxt`;
+                let id = 1;
+                const items = project.tags.map((element) =&gt; {
+                    const params = {
+                        id: (id++).toString(),
+                        tag: element.name,
+                    };
+                    return interpolate(itemTemplate, params);
+                });
+                yield this.storageProvider.writeText(pbtxtFileName, items.join(&quot;&quot;));
+            }
+        });
+    }
+    exportAnnotations(exportFolderName, allAssets) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Create Annotations Sub Folder
+            const annotationsFolderName = `${exportFolderName}/Annotations`;
+            yield this.storageProvider.createContainer(annotationsFolderName);
+            const allAnnotationExports = []; // Promise&lt;void&gt;[]
+            // Save Annotations
+            this.imagesInfo.forEach((imageInfo, imageName) =&gt; {
+                allAnnotationExports.push(new Promise((resolve, reject) =&gt; __awaiter(this, void 0, void 0, function* () {
+                    const imageFilePath = `${annotationsFolderName}/${imageName}`;
+                    const assetFilePath = `${imageFilePath.substr(0, imageFilePath.lastIndexOf(&quot;.&quot;))
+                        || imageFilePath}.xml`;
+                    const objectsXML = imageInfo.objects.map((o) =&gt; {
+                        const params = {
+                            name: o.name,
+                            xmin: o.xmin.toString(),
+                            ymin: o.ymin.toString(),
+                            xmax: o.xmax.toString(),
+                            ymax: o.ymax.toString(),
+                        };
+                        return interpolate(objectTemplate, params);
+                    });
+                    const params = {
+                        fileName: imageName,
+                        filePath: imageFilePath,
+                        width: imageInfo.width.toString(),
+                        height: imageInfo.height.toString(),
+                        objects: objectsXML.join(&quot;&quot;),
+                    };
+                    // Save Annotation File
+                    yield this.storageProvider.writeText(assetFilePath, interpolate(annotationTemplate, params));
+                    resolve();
+                })));
+            });
+            try {
+                yield Promise.all(allAnnotationExports);
+            }
+            catch (err) {
+                console.log(err);
+            }
+        });
+    }
+    exportImageSets(exportFolderName, allAssets, tags, testSplit, exportUnassignedTags) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Create ImageSets Sub Folder (Main ?)
+            const imageSetsFolderName = `${exportFolderName}/ImageSets`;
+            yield this.storageProvider.createContainer(imageSetsFolderName);
+            const imageSetsMainFolderName = `${exportFolderName}/ImageSets/Main`;
+            yield this.storageProvider.createContainer(imageSetsMainFolderName);
+            const tagsDict = new Map();
+            if (tags) {
+                tags.forEach((tag) =&gt; {
+                    tagsDict.set(tag.name, []);
+                });
+                allAssets.forEach((asset) =&gt; {
+                    if (asset.regions.length &gt; 0) {
+                        asset.regions.forEach((region) =&gt; {
+                            tags.forEach((tag) =&gt; {
+                                const array = tagsDict.get(tag.name);
+                                if (region.tags.filter((regionTag) =&gt; regionTag.name === tag.name).length &gt; 0) {
+                                    array.push(`${asset.asset.name} 1`);
+                                }
+                                else {
+                                    array.push(`${asset.asset.name} -1`);
+                                }
+                            });
+                        });
+                    }
+                    else if (exportUnassignedTags) {
+                        tags.forEach((tag) =&gt; {
+                            const array = tagsDict.get(tag.name);
+                            array.push(`${asset.asset.name} -1`);
+                        });
+                    }
+                });
+                // Save ImageSets
+                tags.forEach((tag) =&gt; __awaiter(this, void 0, void 0, function* () {
+                    if (testSplit &gt; 0 &amp;&amp; testSplit &lt;= 1) {
+                        // Shuffle tagsDict sets
+                        tagsDict.forEach((value, key) =&gt; {
+                            value = this.shuffle(value);
+                        });
+                        const array = tagsDict.get(tag.name);
+                        // Split in Test and Train sets
+                        const totalAssets = array.length;
+                        const testCount = Math.ceil(totalAssets * testSplit);
+                        const testArray = array.slice(0, testCount);
+                        const trainArray = array.slice(testCount, totalAssets);
+                        const testImageSetFileName = `${imageSetsMainFolderName}/${tag.name}_val.txt`;
+                        yield this.storageProvider.writeText(testImageSetFileName, testArray.join(&quot;\n&quot;));
+                        const trainImageSetFileName = `${imageSetsMainFolderName}/${tag.name}_train.txt`;
+                        yield this.storageProvider.writeText(trainImageSetFileName, trainArray.join(&quot;\n&quot;));
+                    }
+                    else {
+                        const imageSetFileName = `${imageSetsMainFolderName}/${tag.name}.txt`;
+                        yield this.storageProvider.writeText(imageSetFileName, tagsDict.get(tag.name).join(&quot;\n&quot;));
+                    }
+                }));
+            }
+        });
+    }
+    shuffle(a) {
+        for (let i = a.length - 1; i &gt; 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

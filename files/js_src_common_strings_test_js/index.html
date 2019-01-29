@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - js-src/common/strings.test.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>js-src/common/strings.test.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">60.14</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">150</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">26.10</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">2.32</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">import { strings, addLocValues, interpolate, interpolateJson } from &quot;./strings&quot;;
+import { english } from &quot;./localization/en-us&quot;;
+import { spanish } from &quot;./localization/es-cl&quot;;
+const languages = [&quot;en&quot;, &quot;es&quot;];
+describe(&quot;Localization tests&quot;, () =&gt; {
+    function getLanguageJson(language) {
+        return {
+            en: english,
+            es: spanish,
+        }[language];
+    }
+    describe(&quot;JSON Form Schemas&quot;, () =&gt; {
+        it(&quot;Connection Form&quot;, () =&gt; {
+            for (const language of languages) {
+                const languageJson = getLanguageJson(language);
+                // tslint:disable-next-line:no-var-requires
+                const formJson = require(&quot;../react/components/pages/connections/connectionForm.json&quot;);
+                strings.setLanguage(language);
+                const lConn = languageJson.connections;
+                const common = languageJson.common;
+                const newFormJson = addLocValues(formJson);
+                const formProps = newFormJson.properties;
+                expect(newFormJson.title).toEqual(lConn.title);
+                expect(formProps.name.title).toEqual(common.displayName);
+                expect(formProps.description.title).toEqual(common.description);
+                expect(formProps.providerType.title).toEqual(common.provider);
+            }
+        });
+        it(&quot;App Settings Form&quot;, () =&gt; {
+            for (const language of languages) {
+                const languageJson = getLanguageJson(language);
+                // tslint:disable-next-line:no-var-requires
+                const formJson = require(&quot;../react/components/pages/appSettings/appSettingsForm.json&quot;);
+                strings.setLanguage(language);
+                const appSettings = languageJson.appSettings;
+                const newFormJson = addLocValues(formJson);
+                const formProps = newFormJson.properties;
+                const securityTokenProps = formProps.securityTokens.items.properties;
+                expect(formProps.securityTokens.title).toEqual(appSettings.securityTokens.title);
+                expect(formProps.securityTokens.description).toEqual(appSettings.securityTokens.description);
+                expect(securityTokenProps.name.title).toEqual(appSettings.securityToken.name.title);
+                expect(securityTokenProps.key.title).toEqual(appSettings.securityToken.key.title);
+            }
+        });
+        it(&quot;Export Form&quot;, () =&gt; {
+            for (const language of languages) {
+                const languageJson = getLanguageJson(language);
+                // tslint:disable-next-line:no-var-requires
+                const formJson = require(&quot;../react/components/pages/export/exportForm.json&quot;);
+                strings.setLanguage(language);
+                const newFormJson = addLocValues(formJson);
+                const formProps = newFormJson.properties;
+                const common = languageJson.common;
+                const lExp = languageJson.export;
+                expect(formProps.providerType.title).toEqual(common.provider);
+            }
+        });
+        it(&quot;Project Settings Form&quot;, () =&gt; {
+            for (const language of languages) {
+                const languageJson = getLanguageJson(language);
+                // tslint:disable-next-line:no-var-requires
+                const formJson = require(&quot;../react/components/pages/projectSettings/projectForm.json&quot;);
+                strings.setLanguage(language);
+                const newFormJson = addLocValues(formJson);
+                const formProps = newFormJson.properties;
+                const common = languageJson.common;
+                const lProj = languageJson.projectSettings;
+                expect(formProps.name.title).toEqual(common.displayName);
+                expect(formProps.sourceConnection.title).toEqual(lProj.sourceConnection.title);
+                expect(formProps.sourceConnection.description).toEqual(lProj.sourceConnection.description);
+                expect(formProps.targetConnection.title).toEqual(lProj.targetConnection.title);
+                expect(formProps.targetConnection.description).toEqual(lProj.targetConnection.description);
+                expect(formProps.videoSettings.title).toEqual(lProj.videoSettings.title);
+                expect(formProps.videoSettings.properties.frameExtractionRate.description).toEqual(lProj.videoSettings.description);
+                expect(formProps.videoSettings.properties.frameExtractionRate.title).toEqual(lProj.videoSettings.frameExtractionRate);
+                expect(formProps.description.title).toEqual(common.description);
+                expect(formProps.tags.title).toEqual(languageJson.tags.title);
+            }
+        });
+        it(&quot;Tag Editor Modal Form&quot;, () =&gt; {
+            for (const language of languages) {
+                const languageJson = getLanguageJson(language);
+                // tslint:disable-next-line:no-var-requires
+                const formJson = require(&quot;../react/components/common/tagsInput/tagEditorModal/tagEditorModal.json&quot;);
+                strings.setLanguage(language);
+                const newFormJson = addLocValues(formJson);
+                const formProps = newFormJson.properties;
+                const common = languageJson.common;
+                const lTags = languageJson.tags;
+                expect(formProps.name.title).toEqual(lTags.modal.name);
+                expect(formProps.color.title).toEqual(lTags.modal.color);
+                expect(formProps.color.enumNames[0]).toEqual(lTags.colors.white);
+                expect(formProps.color.enumNames[1]).toEqual(lTags.colors.gray);
+                expect(formProps.color.enumNames[2]).toEqual(lTags.colors.red);
+                expect(formProps.color.enumNames[3]).toEqual(lTags.colors.maroon);
+                expect(formProps.color.enumNames[4]).toEqual(lTags.colors.yellow);
+                expect(formProps.color.enumNames[5]).toEqual(lTags.colors.olive);
+                expect(formProps.color.enumNames[6]).toEqual(lTags.colors.lime);
+                expect(formProps.color.enumNames[7]).toEqual(lTags.colors.green);
+                expect(formProps.color.enumNames[8]).toEqual(lTags.colors.aqua);
+                expect(formProps.color.enumNames[9]).toEqual(lTags.colors.teal);
+                expect(formProps.color.enumNames[10]).toEqual(lTags.colors.blue);
+                expect(formProps.color.enumNames[11]).toEqual(lTags.colors.navy);
+                expect(formProps.color.enumNames[12]).toEqual(lTags.colors.fuschia);
+                expect(formProps.color.enumNames[13]).toEqual(lTags.colors.purple);
+            }
+        });
+    });
+    it(&quot;Interpolate processing string template correctly&quot;, () =&gt; {
+        const template = &quot;Hello ${user.name}, my name is ${bot.handle}&quot;;
+        const params = {
+            user: {
+                name: &quot;John Doe&quot;,
+            },
+            bot: {
+                handle: &quot;VoTT bot&quot;,
+            },
+        };
+        const result = interpolate(template, params);
+        expect(result).toEqual(`Hello ${params.user.name}, my name is ${params.bot.handle}`);
+    });
+    it(&quot;Interpolate processes a JSON object template correctly&quot;, () =&gt; {
+        const template = {
+            user: {
+                firstName: &quot;${user.firstName}&quot;,
+                lastName: &quot;${user.lastName}&quot;,
+            },
+            address: {
+                street: &quot;${address.street}&quot;,
+                city: &quot;${address.city}&quot;,
+                state: &quot;${address.state}&quot;,
+                zipCode: &quot;${address.zipCode}&quot;,
+            },
+        };
+        const params = {
+            user: {
+                firstName: &quot;John&quot;,
+                lastName: &quot;Doe&quot;,
+            },
+            address: {
+                street: &quot;1 Microsoft Way&quot;,
+                city: &quot;Redmond&quot;,
+                state: &quot;WA&quot;,
+                zipCode: &quot;98052&quot;,
+            },
+        };
+        const result = interpolateJson(template, params);
+        expect(result).toEqual(params);
+    });
+});</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

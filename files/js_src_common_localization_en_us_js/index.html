@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - js-src/common/localization/en-us.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>js-src/common/localization/en-us.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">33.70</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">202</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">3.12</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.19</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/**
+ * App Strings for English language
+ */
+export const english = {
+    appName: &quot;Visual Object Tagging Tool&quot;,
+    common: {
+        displayName: &quot;Display Name&quot;,
+        description: &quot;Description&quot;,
+        submit: &quot;Submit&quot;,
+        cancel: &quot;Cancel&quot;,
+        delete: &quot;Delete&quot;,
+        provider: &quot;Provider&quot;,
+        homePage: &quot;Home Page&quot;,
+    },
+    homePage: {
+        newProject: &quot;New Project&quot;,
+        openLocalProject: {
+            title: &quot;Open Local Project&quot;,
+        },
+        openCloudProject: {
+            title: &quot;Open Cloud Project&quot;,
+            selectConnection: &quot;Select a Connection&quot;,
+        },
+        recentProjects: &quot;Recent Projects&quot;,
+        deleteProject: {
+            title: &quot;Delete Project&quot;,
+            confirmation: &quot;Are you sure you want to delete project&quot;,
+        },
+    },
+    appSettings: {
+        title: &quot;Application Settings&quot;,
+        storageTitle: &quot;Storage Settings&quot;,
+        uiHelp: &quot;Where your settings are stored&quot;,
+        save: &quot;Save Settings&quot;,
+        securityToken: {
+            name: {
+                title: &quot;Name&quot;,
+            },
+            key: {
+                title: &quot;Key&quot;,
+            },
+        },
+        securityTokens: {
+            title: &quot;Security Tokens&quot;,
+            description: &quot;Security tokens are used to encrypt sensitive data within your project configuration&quot;,
+        },
+        devTools: {
+            description: &quot;Open application developer tools to help diagnose issues&quot;,
+            button: &quot;Toggle Developer Tools&quot;,
+        },
+        reload: {
+            description: &quot;Reload the app discarding all current changes&quot;,
+            button: &quot;Refresh Application&quot;,
+        },
+        messages: {
+            saveSuccess: &quot;Successfully saved application settings&quot;,
+        },
+    },
+    projectSettings: {
+        title: &quot;Project Settings&quot;,
+        securityToken: {
+            title: &quot;Security Token&quot;,
+            description: &quot;Used to encrypt sensitive data within project files&quot;,
+        },
+        save: &quot;Save Project&quot;,
+        sourceConnection: {
+            title: &quot;Source Connection&quot;,
+            description: &quot;Where to load assets from&quot;,
+        },
+        targetConnection: {
+            title: &quot;Target Connection&quot;,
+            description: &quot;Where to save the project and exported data&quot;,
+        },
+        videoSettings: {
+            title: &quot;Video Settings&quot;,
+            description: &quot;The rate at which frames are extracted for tagging.&quot;,
+            frameExtractionRate: &quot;Frame Extraction Rate (frames per a video second)&quot;,
+        },
+        addConnection: &quot;Add Connection&quot;,
+        messages: {
+            saveSuccess: &quot;Successfully saved ${project.name} project settings&quot;,
+        },
+    },
+    tags: {
+        title: &quot;Tags&quot;,
+        placeholder: &quot;Add new tag&quot;,
+        editor: &quot;Tags Editor&quot;,
+        modal: {
+            name: &quot;Tag Name&quot;,
+            color: &quot;Tag Color&quot;,
+        },
+        colors: {
+            white: &quot;White&quot;,
+            gray: &quot;Gray&quot;,
+            red: &quot;Red&quot;,
+            maroon: &quot;Maroon&quot;,
+            yellow: &quot;Yellow&quot;,
+            olive: &quot;Olive&quot;,
+            lime: &quot;Lime&quot;,
+            green: &quot;Green&quot;,
+            aqua: &quot;Aqua&quot;,
+            teal: &quot;Teal&quot;,
+            blue: &quot;Blue&quot;,
+            navy: &quot;Navy&quot;,
+            fuschia: &quot;Fuschia&quot;,
+            purple: &quot;Purple&quot;,
+        },
+    },
+    connections: {
+        title: &quot;Connections&quot;,
+        details: &quot;Connection Details&quot;,
+        settings: &quot;Connection Settings&quot;,
+        instructions: &quot;Please select a connection to edit&quot;,
+        save: &quot;Save Connection&quot;,
+        providers: {
+            azureBlob: {
+                title: &quot;Azure Blob Storage&quot;,
+            },
+            bing: {
+                title: &quot;Bing Image Search&quot;,
+                options: &quot;Bing Image Search Options&quot;,
+                apiKey: &quot;API Key&quot;,
+                query: &quot;Query&quot;,
+                aspectRatio: {
+                    title: &quot;Aspect Ratio&quot;,
+                    all: &quot;All&quot;,
+                    square: &quot;Square&quot;,
+                    wide: &quot;Wide&quot;,
+                    tall: &quot;Tall&quot;,
+                },
+            },
+            local: {
+                title: &quot;Local File System&quot;,
+                folderPath: &quot;Folder Path&quot;,
+                selectFolder: &quot;Select Folder&quot;,
+                chooseFolder: &quot;Choose Folder&quot;,
+            },
+        },
+    },
+    editorPage: {
+        width: &quot;Width&quot;,
+        height: &quot;Height&quot;,
+        toolbar: {
+            select: &quot;Select&quot;,
+            pan: &quot;Pan&quot;,
+            drawRectangle: &quot;Draw Rectangle&quot;,
+            drawPolygon: &quot;Draw Polygon&quot;,
+            saveProject: &quot;Save Project&quot;,
+            exportProject: &quot;Export Project&quot;,
+        },
+        assetError: &quot;Unable to display asset&quot;,
+    },
+    export: {
+        title: &quot;Export&quot;,
+        settings: &quot;Export Settings&quot;,
+        saveSettings: &quot;Save Export Settings&quot;,
+        providers: {
+            vottJson: &quot;VoTT JSON&quot;,
+            azureCV: &quot;Azure Custom Vision Service&quot;,
+            tfRecords: &quot;Tensorflow Records&quot;,
+            tfPascalVoc: &quot;Tensorflow Pascal VOC&quot;,
+        },
+        messages: {
+            saveSuccess: &quot;Successfully saved export settings&quot;,
+        },
+    },
+    activeLearning: {
+        title: &quot;Active Learning&quot;,
+    },
+    profile: {
+        settings: &quot;Profile Settings&quot;,
+    },
+    errors: {
+        unknown: {
+            title: &quot;Unknown Error&quot;,
+            message: &quot;The app encounted an unknown error. Please try again.&quot;,
+        },
+        projectUploadError: {
+            title: &quot;Error Uploading File&quot;,
+            message: `There was an error uploading the file.
+                Please verify the file is of the correct format and try again.`,
+        },
+        genericRenderError: {
+            title: &quot;Error Loading Application&quot;,
+            message: &quot;An error occured while rendering the application. Please try again&quot;,
+        },
+        projectInvalidSecurityToken: {
+            title: &quot;Error loading project file&quot;,
+            message: `The security token referenced by the project is invalid.
+                Verify that the security token for the project has been set correctly within your application settings`,
+        },
+        projectInvalidJson: {
+            title: &quot;Error parsing project file&quot;,
+            message: &quot;The selected project files does not contain valid JSON. Please check the file any try again.&quot;,
+        },
+        securityTokenNotFound: {
+            title: &quot;Error loading project file&quot;,
+            message: `The security token referenced by the project cannot be found in your current application settings.
+                Verify the security token exists and try to reload the project.`,
+        },
+    },
+};</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

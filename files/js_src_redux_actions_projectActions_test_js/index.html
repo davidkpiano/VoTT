@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - js-src/redux/actions/projectActions.test.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>js-src/redux/actions/projectActions.test.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">73.53</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">147</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">58.98</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">2.59</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var __awaiter = (this &amp;&amp; this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator[&quot;throw&quot;](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import createMockStore from &quot;redux-mock-store&quot;;
+import { ActionTypes } from &quot;./actionTypes&quot;;
+import * as projectActions from &quot;./projectActions&quot;;
+import MockFactory from &quot;../../common/mockFactory&quot;;
+import thunk from &quot;redux-thunk&quot;;
+jest.mock(&quot;../../services/projectService&quot;);
+import ProjectService from &quot;../../services/projectService&quot;;
+jest.mock(&quot;../../services/assetService&quot;);
+import { AssetService } from &quot;../../services/assetService&quot;;
+import { ExportProviderFactory } from &quot;../../providers/export/exportProviderFactory&quot;;
+import initialState from &quot;../store/initialState&quot;;
+describe(&quot;Project Redux Actions&quot;, () =&gt; {
+    let store;
+    let projectServiceMock;
+    const appSettings = MockFactory.appSettings();
+    beforeEach(() =&gt; {
+        const middleware = [thunk];
+        const mockState = Object.assign({}, initialState, { appSettings });
+        store = createMockStore(middleware)(mockState);
+        projectServiceMock = ProjectService;
+        projectServiceMock.prototype.load = jest.fn((project) =&gt; Promise.resolve(project));
+    });
+    it(&quot;Load Project action resolves a promise and dispatches redux action&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+        const project = MockFactory.createTestProject(&quot;TestProject&quot;);
+        const securityToken = appSettings.securityTokens.find((st) =&gt; st.name === project.securityToken);
+        const result = yield projectActions.loadProject(project)(store.dispatch, store.getState);
+        const actions = store.getActions();
+        expect(actions.length).toEqual(1);
+        expect(actions[0]).toEqual({
+            type: ActionTypes.LOAD_PROJECT_SUCCESS,
+            payload: project,
+        });
+        expect(result).toEqual(project);
+        expect(projectServiceMock.prototype.load).toBeCalledWith(project, securityToken);
+    }));
+    it(&quot;Save Project action calls project service and dispatches redux action&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+        projectServiceMock.prototype.save = jest.fn((project) =&gt; Promise.resolve(project));
+        const project = MockFactory.createTestProject(&quot;TestProject&quot;);
+        const securityToken = appSettings.securityTokens.find((st) =&gt; st.name === project.securityToken);
+        const result = yield projectActions.saveProject(project)(store.dispatch, store.getState);
+        const actions = store.getActions();
+        expect(actions.length).toEqual(2);
+        expect(actions[0]).toEqual({
+            type: ActionTypes.SAVE_PROJECT_SUCCESS,
+            payload: project,
+        });
+        expect(actions[1]).toEqual({
+            type: ActionTypes.LOAD_PROJECT_SUCCESS,
+            payload: project,
+        });
+        expect(result).toEqual(project);
+        expect(projectServiceMock.prototype.save).toBeCalledWith(project, securityToken);
+        expect(projectServiceMock.prototype.load).toBeCalledWith(project, securityToken);
+    }));
+    it(&quot;Delete Project action calls project service and dispatches redux action&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+        projectServiceMock.prototype.delete = jest.fn(() =&gt; Promise.resolve());
+        const project = MockFactory.createTestProject(&quot;TestProject&quot;);
+        yield projectActions.deleteProject(project)(store.dispatch);
+        const actions = store.getActions();
+        expect(actions.length).toEqual(1);
+        expect(actions[0]).toEqual({
+            type: ActionTypes.DELETE_PROJECT_SUCCESS,
+            payload: project,
+        });
+        expect(projectServiceMock.prototype.delete).toBeCalledWith(project);
+    }));
+    it(&quot;Close project dispatches redux action&quot;, () =&gt; {
+        projectActions.closeProject()(store.dispatch);
+        const actions = store.getActions();
+        expect(actions.length).toEqual(1);
+        expect(actions[0]).toEqual({
+            type: ActionTypes.CLOSE_PROJECT_SUCCESS,
+        });
+    });
+    it(&quot;Load Assets calls asset service and dispatches redux action&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+        const testAssets = MockFactory.createTestAssets(10);
+        const mockAssetService = AssetService;
+        mockAssetService.prototype.getAssets = jest.fn(() =&gt; Promise.resolve(testAssets));
+        const project = MockFactory.createTestProject(&quot;TestProject&quot;);
+        const results = yield projectActions.loadAssets(project)(store.dispatch);
+        const actions = store.getActions();
+        expect(actions.length).toEqual(1);
+        expect(actions[0]).toEqual({
+            type: ActionTypes.LOAD_PROJECT_ASSETS_SUCCESS,
+            payload: testAssets,
+        });
+        expect(mockAssetService.prototype.getAssets).toBeCalled();
+        expect(results).toEqual(testAssets);
+    }));
+    it(&quot;Load Asset metadata calls asset service and dispatches redux action&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+        const asset = MockFactory.createTestAsset(&quot;Asset1&quot;);
+        const assetMetadata = MockFactory.createTestAssetMetadata(asset);
+        const mockAssetService = AssetService;
+        mockAssetService.prototype.getAssetMetadata = jest.fn(() =&gt; assetMetadata);
+        const project = MockFactory.createTestProject(&quot;TestProject&quot;);
+        const result = yield projectActions.loadAssetMetadata(project, asset)(store.dispatch);
+        const actions = store.getActions();
+        expect(actions.length).toEqual(1);
+        expect(actions[0]).toEqual({
+            type: ActionTypes.LOAD_ASSET_METADATA_SUCCESS,
+            payload: assetMetadata,
+        });
+        expect(mockAssetService.prototype.getAssetMetadata).toBeCalledWith(asset);
+        expect(result).toEqual(assetMetadata);
+    }));
+    it(&quot;Save Asset metadata calls asset service and dispatches redux action&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+        const asset = MockFactory.createTestAsset(&quot;Asset1&quot;);
+        const assetMetadata = MockFactory.createTestAssetMetadata(asset);
+        const mockAssetService = AssetService;
+        mockAssetService.prototype.save = jest.fn(() =&gt; assetMetadata);
+        const project = MockFactory.createTestProject(&quot;TestProject&quot;);
+        const result = yield projectActions.saveAssetMetadata(project, assetMetadata)(store.dispatch);
+        const actions = store.getActions();
+        expect(actions.length).toEqual(1);
+        expect(actions[0]).toEqual({
+            type: ActionTypes.SAVE_ASSET_METADATA_SUCCESS,
+            payload: assetMetadata,
+        });
+        expect(mockAssetService.prototype.save).toBeCalledWith(assetMetadata);
+        expect(result).toEqual(assetMetadata);
+    }));
+    it(&quot;Export project calls export provider and dispatches redux action&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+        const mockExportProvider = {
+            project: null,
+            export: jest.fn(() =&gt; Promise.resolve()),
+        };
+        ExportProviderFactory.create = jest.fn(() =&gt; mockExportProvider);
+        const project = MockFactory.createTestProject(&quot;TestProject&quot;);
+        yield projectActions.exportProject(project)(store.dispatch);
+        const actions = store.getActions();
+        expect(actions.length).toEqual(1);
+        expect(actions[0]).toEqual({
+            type: ActionTypes.EXPORT_PROJECT_SUCCESS,
+            payload: project,
+        });
+        expect(ExportProviderFactory.create).toBeCalledWith(project.exportFormat.providerType, project, project.exportFormat.providerOptions);
+        expect(mockExportProvider.export).toHaveBeenCalled();
+    }));
+});</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

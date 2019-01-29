@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - js-src/providers/storage/localFileSystemProxy.test.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>js-src/providers/storage/localFileSystemProxy.test.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">78.69</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">105</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">41.42</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.66</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var __awaiter = (this &amp;&amp; this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator[&quot;throw&quot;](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import { IpcRendererProxy } from &quot;../../common/ipcRendererProxy&quot;;
+import { LocalFileSystemProxy } from &quot;./localFileSystemProxy&quot;;
+import { StorageProviderFactory } from &quot;./storageProviderFactory&quot;;
+import registerProviders from &quot;../../registerProviders&quot;;
+describe(&quot;LocalFileSystem Proxy Storage Provider&quot;, () =&gt; {
+    it(&quot;Provider is registered with the StorageProviderFactory&quot;, () =&gt; {
+        registerProviders();
+        const storageProvider = StorageProviderFactory.create(&quot;localFileSystemProxy&quot;);
+        expect(storageProvider).not.toBeNull();
+    });
+    it(&quot;creates an instance without options&quot;, () =&gt; {
+        const storageProvider = new LocalFileSystemProxy();
+        expect(storageProvider).not.toBeNull();
+    });
+    describe(&quot;Methods&quot;, () =&gt; {
+        let provider = null;
+        const options = {
+            folderPath: &quot;/test&quot;,
+        };
+        beforeEach(() =&gt; {
+            provider = new LocalFileSystemProxy(options);
+        });
+        it(&quot;selectContainer&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+            const expectedFolderPath = &quot;/test&quot;;
+            IpcRendererProxy.send = jest.fn(() =&gt; Promise.resolve(expectedFolderPath));
+            const actualFolderPath = yield provider.selectContainer();
+            expect(IpcRendererProxy.send).toBeCalledWith(&quot;LocalFileSystem:selectContainer&quot;);
+            expect(actualFolderPath).toEqual(expectedFolderPath);
+        }));
+        it(&quot;writeText&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+            IpcRendererProxy.send = jest.fn(() =&gt; Promise.resolve());
+            const fileName = &quot;test.txt&quot;;
+            const contents = &quot;Hello World!&quot;;
+            const expectedFilePath = [options.folderPath, fileName].join(&quot;/&quot;);
+            yield provider.writeText(fileName, contents);
+            expect(IpcRendererProxy.send).toBeCalledWith(&quot;LocalFileSystem:writeText&quot;, [expectedFilePath, contents]);
+        }));
+        it(&quot;readText&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+            const expectedContents = &quot;Hello World!&quot;;
+            IpcRendererProxy.send = jest.fn(() =&gt; Promise.resolve(expectedContents));
+            const fileName = &quot;test.txt&quot;;
+            const expectedFilePath = [options.folderPath, fileName].join(&quot;/&quot;);
+            const actual = yield provider.readText(fileName);
+            expect(IpcRendererProxy.send).toBeCalledWith(&quot;LocalFileSystem:readText&quot;, [expectedFilePath]);
+            expect(actual).toEqual(expectedContents);
+        }));
+        it(&quot;deleteFile&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+            IpcRendererProxy.send = jest.fn(() =&gt; Promise.resolve());
+            const fileName = &quot;test.txt&quot;;
+            const expectedFilePath = [options.folderPath, fileName].join(&quot;/&quot;);
+            yield provider.deleteFile(fileName);
+            expect(IpcRendererProxy.send).toBeCalledWith(&quot;LocalFileSystem:deleteFile&quot;, [expectedFilePath]);
+        }));
+        it(&quot;createContainer&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+            IpcRendererProxy.send = jest.fn(() =&gt; Promise.resolve());
+            const containerName = &quot;test&quot;;
+            const expectedFolderPath = [options.folderPath, containerName].join(&quot;/&quot;);
+            yield provider.createContainer(&quot;test&quot;);
+            expect(IpcRendererProxy.send).toBeCalledWith(&quot;LocalFileSystem:createContainer&quot;, [expectedFolderPath]);
+        }));
+        it(&quot;deleteContainer&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+            IpcRendererProxy.send = jest.fn(() =&gt; Promise.resolve());
+            const containerName = &quot;test&quot;;
+            const expectedContainerPath = [options.folderPath, containerName].join(&quot;/&quot;);
+            yield provider.deleteContainer(containerName);
+            expect(IpcRendererProxy.send).toBeCalledWith(&quot;LocalFileSystem:deleteContainer&quot;, [expectedContainerPath]);
+        }));
+        it(&quot;listFiles&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+            const expectedFiles = [
+                &quot;/test/file1.txt&quot;,
+                &quot;/test/file2.txt&quot;,
+                &quot;/test/file3.txt&quot;,
+                &quot;/test/file4.txt&quot;,
+            ];
+            IpcRendererProxy.send = jest.fn(() =&gt; Promise.resolve(expectedFiles));
+            const containerName = &quot;test&quot;;
+            const expectedContainerPath = [options.folderPath, containerName].join(&quot;/&quot;);
+            const actualFiles = yield provider.listFiles(containerName);
+            expect(IpcRendererProxy.send).toBeCalledWith(&quot;LocalFileSystem:listFiles&quot;, [expectedContainerPath]);
+            expect(actualFiles).toEqual(expectedFiles);
+        }));
+        it(&quot;listContainers&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+            const expectedFolders = [
+                &quot;/test/folder1&quot;,
+                &quot;/test/folder2&quot;,
+                &quot;/test/folder3&quot;,
+                &quot;/test/folder4&quot;,
+            ];
+            IpcRendererProxy.send = jest.fn(() =&gt; Promise.resolve(expectedFolders));
+            const containerName = &quot;test&quot;;
+            const expectedContainerPath = [options.folderPath, containerName].join(&quot;/&quot;);
+            const actualFolders = yield provider.listContainers(containerName);
+            expect(IpcRendererProxy.send).toBeCalledWith(&quot;LocalFileSystem:listContainers&quot;, [expectedContainerPath]);
+            expect(actualFolders).toEqual(expectedFolders);
+        }));
+    });
+});</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - js-src/providers/export/azureCustomVision.test.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>js-src/providers/export/azureCustomVision.test.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">73.57</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">222</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">58.95</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">3.91</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var __awaiter = (this &amp;&amp; this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator[&quot;throw&quot;](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import shortid from &quot;shortid&quot;;
+import _ from &quot;lodash&quot;;
+import { AzureCustomVisionProvider, NewOrExisting } from &quot;./azureCustomVision&quot;;
+import registerProviders from &quot;../../registerProviders&quot;;
+import { ExportProviderFactory } from &quot;./exportProviderFactory&quot;;
+import MockFactory from &quot;../../common/mockFactory&quot;;
+import { AssetState, RegionType, } from &quot;../../models/applicationState&quot;;
+import { ExportAssetState } from &quot;./exportProvider&quot;;
+jest.mock(&quot;./azureCustomVision/azureCustomVisionService&quot;);
+import { AzureCustomVisionService, } from &quot;./azureCustomVision/azureCustomVisionService&quot;;
+jest.mock(&quot;../../services/assetService&quot;);
+import { AssetService } from &quot;../../services/assetService&quot;;
+import HtmlFileReader from &quot;../../common/htmlFileReader&quot;;
+describe(&quot;Azure Custom Vision Export Provider&quot;, () =&gt; {
+    let testProject = null;
+    const defaultOptions = {
+        apiKey: expect.any(String),
+        assetState: ExportAssetState.All,
+        newOrExisting: NewOrExisting.New,
+        projectId: expect.any(String),
+    };
+    function createProvider(project) {
+        return new AzureCustomVisionProvider(project, project.exportFormat.providerOptions);
+    }
+    beforeEach(() =&gt; {
+        jest.resetAllMocks();
+        testProject = Object.assign({}, MockFactory.createTestProject(&quot;TestProject&quot;), { assets: {
+                &quot;asset-1&quot;: MockFactory.createTestAsset(&quot;1&quot;, AssetState.Tagged),
+                &quot;asset-2&quot;: MockFactory.createTestAsset(&quot;2&quot;, AssetState.Tagged),
+                &quot;asset-3&quot;: MockFactory.createTestAsset(&quot;3&quot;, AssetState.Visited),
+                &quot;asset-4&quot;: MockFactory.createTestAsset(&quot;4&quot;, AssetState.NotVisited),
+            }, exportFormat: {
+                providerType: &quot;azureCustomVision&quot;,
+                providerOptions: {
+                    assetState: ExportAssetState.All,
+                    projectdId: &quot;azure-custom-vision-project-1&quot;,
+                    apiKey: &quot;ABC123&quot;,
+                },
+            } });
+    });
+    it(&quot;Is Defined&quot;, () =&gt; {
+        expect(AzureCustomVisionProvider).toBeDefined();
+    });
+    it(&quot;Is Registered with the ExportProviderFactory&quot;, () =&gt; {
+        registerProviders();
+        const provider = ExportProviderFactory.createFromProject(testProject);
+        expect(provider).not.toBeNull();
+        expect(provider).toBeInstanceOf(AzureCustomVisionProvider);
+    });
+    it(&quot;Calling save with New project creates Azure Custom Vision project&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+        const customVisionMock = AzureCustomVisionService;
+        customVisionMock.prototype.create = jest.fn((project) =&gt; {
+            return Promise.resolve(Object.assign({ id: shortid.generate() }, project));
+        });
+        testProject.exportFormat.providerOptions = defaultOptions;
+        const provider = createProvider(testProject);
+        const newOptions = yield provider.save(testProject.exportFormat);
+        const customVisionProject = {
+            name: defaultOptions.name,
+            description: defaultOptions.description,
+            classificationType: defaultOptions.classificationType,
+            domainId: defaultOptions.domainId,
+            projectType: defaultOptions.projectType,
+        };
+        expect(AzureCustomVisionService.prototype.create).toBeCalledWith(customVisionProject);
+        expect(newOptions).toEqual(expect.objectContaining({
+            assetState: defaultOptions.assetState,
+            apiKey: defaultOptions.apiKey,
+            projectId: expect.any(String),
+            newOrExisting: NewOrExisting.Existing,
+        }));
+    }));
+    it(&quot;Save returns rejected promise during service call failure&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+        const customVisionMock = AzureCustomVisionService;
+        customVisionMock.prototype.create = jest.fn((project) =&gt; Promise.reject(&quot;Error creating project&quot;));
+        testProject.exportFormat.providerOptions = defaultOptions;
+        const provider = createProvider(testProject);
+        yield expect(provider.save(testProject.exportFormat)).rejects.not.toBeNull();
+    }));
+    it(&quot;Calling save with Existing project returns existing provider settings&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+        const customVisionOptions = Object.assign({}, defaultOptions, { newOrExisting: NewOrExisting.Existing });
+        testProject.exportFormat.providerOptions = customVisionOptions;
+        const provider = createProvider(testProject);
+        const newOptions = yield provider.save(testProject.exportFormat);
+        expect(newOptions).toEqual(customVisionOptions);
+        expect(AzureCustomVisionService.prototype.create).not.toBeCalled();
+    }));
+    describe(&quot;Export Scenarios&quot;, () =&gt; {
+        beforeEach(() =&gt; {
+            AssetService.prototype.getAssetMetadata = jest.fn((asset) =&gt; {
+                const regions = [
+                    {
+                        id: shortid.generate(),
+                        type: RegionType.Rectangle,
+                        tags: [
+                            { name: testProject.tags[0].name },
+                        ],
+                        boundingBox: {
+                            left: 10,
+                            top: 10,
+                            height: 100,
+                            width: 100,
+                        },
+                    },
+                ];
+                return Promise.resolve({
+                    asset,
+                    regions: asset.state === AssetState.Tagged ? regions : [],
+                    timestamp: null,
+                });
+            });
+            HtmlFileReader.getAssetBlob = jest.fn(() =&gt; {
+                return Promise.resolve(new Blob([&quot;Some binary data&quot;]));
+            });
+            AzureCustomVisionService.prototype.createImage = jest.fn(() =&gt; {
+                const imageId = shortid.generate();
+                return Promise.resolve({
+                    id: shortid.generate(),
+                    regions: [],
+                    tags: [],
+                    width: 800,
+                    height: 600,
+                    imageUri: `https://imageserver/${imageId}`,
+                });
+            });
+            AzureCustomVisionService.prototype.createTag = jest.fn((projectId, tag) =&gt; {
+                return Promise.resolve(Object.assign({}, tag, { id: shortid.generate() }));
+            });
+            AzureCustomVisionService.prototype.createRegions = jest.fn(() =&gt; Promise.resolve());
+            AzureCustomVisionService.prototype.getProjectTags = jest.fn(() =&gt; Promise.resolve([]));
+        });
+        it(&quot;Uploads binaries, regions &amp; tags for all assets&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+            testProject.exportFormat.providerOptions.assetState = ExportAssetState.All;
+            const allAssets = _.values(testProject.assets);
+            const taggedAssets = _.values(testProject.assets).filter((asset) =&gt; asset.state === AssetState.Tagged);
+            const provider = createProvider(testProject);
+            const results = yield provider.export();
+            expect(results).not.toBeNull();
+            expect(AzureCustomVisionService.prototype.getProjectTags).toBeCalledTimes(1);
+            expect(AzureCustomVisionService.prototype.createTag).toBeCalledTimes(testProject.tags.length);
+            expect(AzureCustomVisionService.prototype.createImage).toBeCalledTimes(allAssets.length);
+            expect(AzureCustomVisionService.prototype.createRegions).toBeCalledTimes(taggedAssets.length);
+        }));
+        it(&quot;Uploads binaries, regions &amp; tags for visited assets&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+            testProject.exportFormat.providerOptions.assetState = ExportAssetState.Visited;
+            const visitedAssets = _
+                .values(testProject.assets)
+                .filter((asset) =&gt; asset.state === AssetState.Visited || asset.state === AssetState.Tagged);
+            const taggedAssets = _
+                .values(testProject.assets)
+                .filter((asset) =&gt; asset.state === AssetState.Tagged);
+            const provider = createProvider(testProject);
+            const results = yield provider.export();
+            expect(results).not.toBeNull();
+            expect(AzureCustomVisionService.prototype.getProjectTags).toBeCalledTimes(1);
+            expect(AzureCustomVisionService.prototype.createTag).toBeCalledTimes(testProject.tags.length);
+            expect(AzureCustomVisionService.prototype.createImage).toBeCalledTimes(visitedAssets.length);
+            expect(AzureCustomVisionService.prototype.createRegions).toBeCalledTimes(taggedAssets.length);
+        }));
+        it(&quot;Uploads binaries, regions &amp; tags for tagged assets&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+            testProject.exportFormat.providerOptions.assetState = ExportAssetState.Tagged;
+            const taggedAssets = _.values(testProject.assets).filter((asset) =&gt; asset.state === AssetState.Tagged);
+            const provider = createProvider(testProject);
+            const results = yield provider.export();
+            expect(results).not.toBeNull();
+            expect(AzureCustomVisionService.prototype.getProjectTags).toBeCalledTimes(1);
+            expect(AzureCustomVisionService.prototype.createTag).toBeCalledTimes(testProject.tags.length);
+            expect(AzureCustomVisionService.prototype.createImage).toBeCalledTimes(taggedAssets.length);
+            expect(AzureCustomVisionService.prototype.createRegions).toBeCalledTimes(taggedAssets.length);
+        }));
+        it(&quot;Only creates missing tags if only some tags are missing&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+            const existingTags = [
+                MockFactory.createAzureCustomVisionTag(testProject.tags[0].name),
+                MockFactory.createAzureCustomVisionTag(testProject.tags[1].name),
+            ];
+            const getProjectsTagsMock = AzureCustomVisionService.prototype.getProjectTags;
+            getProjectsTagsMock.mockImplementationOnce(() =&gt; {
+                return Promise.resolve(existingTags);
+            });
+            const provider = createProvider(testProject);
+            yield provider.export();
+            expect(AzureCustomVisionService.prototype.createTag)
+                .toBeCalledTimes(testProject.tags.length - existingTags.length);
+        }));
+        it(&quot;Returns export results&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+            testProject.exportFormat.providerOptions.assetState = ExportAssetState.All;
+            const allAssets = _.values(testProject.assets);
+            const provider = createProvider(testProject);
+            const results = yield provider.export();
+            expect(results.count).toEqual(allAssets.length);
+            expect(results.completed.length).toEqual(allAssets.length);
+            expect(results.errors.length).toEqual(0);
+        }));
+        it(&quot;Returns partial success results if any error occurs&quot;, () =&gt; __awaiter(this, void 0, void 0, function* () {
+            const getAssetBlobMock = HtmlFileReader.getAssetBlob;
+            HtmlFileReader.getAssetBlob = getAssetBlobMock
+                .mockImplementationOnce((asset) =&gt; {
+                if (asset.path === `C:\\Desktop\\asset1.jpg`) {
+                    return Promise.reject(&quot;Error downloading binary&quot;);
+                }
+                else {
+                    Promise.resolve(new Blob([&quot;Some binary data&quot;]));
+                }
+            });
+            testProject.exportFormat.providerOptions.assetState = ExportAssetState.All;
+            const allAssets = _.values(testProject.assets);
+            const provider = createProvider(testProject);
+            const results = yield provider.export();
+            expect(results.count).toEqual(allAssets.length);
+            expect(results.completed.length).toEqual(allAssets.length - 1);
+            expect(results.errors.length).toEqual(1);
+        }));
+    });
+});</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

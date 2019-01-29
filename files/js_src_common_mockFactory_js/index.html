@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - js-src/common/mockFactory.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>js-src/common/mockFactory.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">74.28</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">713</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">55.21</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">5.60</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">import shortid from &quot;shortid&quot;;
+import { AssetState, AssetType, StorageType, EditorMode, ErrorCode, } from &quot;../models/applicationState&quot;;
+import { ExportAssetState } from &quot;../providers/export/exportProvider&quot;;
+import * as projectActions from &quot;../redux/actions/projectActions&quot;;
+import Canvas from &quot;../react/components/pages/editorPage/canvas&quot;;
+import { BingImageSearchAspectRatio } from &quot;../providers/storage/bingImageSearch&quot;;
+import * as applicationActions from &quot;../redux/actions/applicationActions&quot;;
+import { generateKey } from &quot;./crypto&quot;;
+export default class MockFactory {
+    /**
+     * Creates sample IAppError
+     * @param errorCode The error code to map to the error
+     * @param title The title of the error
+     * @param message The detailed error message
+     * @returns {IAppError}
+     */
+    static createAppError(errorCode = ErrorCode.Unknown, title = &quot;&quot;, message = &quot;&quot;) {
+        return {
+            errorCode,
+            title,
+            message,
+        };
+    }
+    /**
+     * Creates fake IAsset
+     * @param name Name of asset
+     * @param assetState State of asset
+     */
+    static createTestAsset(name, assetState = AssetState.NotVisited, path = `C:\\Desktop\\asset${name}.jpg`) {
+        return {
+            id: `asset-${name}`,
+            format: &quot;jpg&quot;,
+            name: `Asset ${name}.jpg`,
+            path: `${path}`,
+            state: assetState,
+            type: AssetType.Image,
+            size: {
+                width: 800,
+                height: 600,
+            },
+        };
+    }
+    /**
+     * Creates fake IAsset
+     * @param name Name of asset
+     * @param assetState State of asset
+     */
+    static createWebTestAsset(name, assetState = AssetState.NotVisited) {
+        return MockFactory.createTestAsset(name, assetState, `https://image.com/asset${name}.jpg`);
+    }
+    /**
+     * @name Create Video Test Asset
+     * @description Creates fake video IAsset
+     * @param name Name of asset
+     * @param assetState State of asset
+     */
+    static createVideoTestAsset(name, assetState = AssetState.NotVisited) {
+        return {
+            id: `videoasset-${name}`,
+            format: &quot;mp4&quot;,
+            name: `Video Asset ${name}`,
+            path: `C:\\Desktop\\videoasset${name}.mp4`,
+            state: assetState,
+            type: AssetType.Video,
+            size: {
+                width: 800,
+                height: 600,
+            },
+        };
+    }
+    /**
+     * Creates array of fake IAsset
+     * @param count Number of assets to create
+     */
+    static createTestAssets(count = 10) {
+        const assets = [];
+        for (let i = 1; i &lt;= count / 2; i++) {
+            assets.push(MockFactory.createVideoTestAsset(i.toString()));
+        }
+        if (count &gt; 1) {
+            for (let i = 1; i &lt;= count / 2; i++) {
+                assets.push(MockFactory.createTestAsset(i.toString()));
+            }
+        }
+        return assets;
+    }
+    /**
+     * Creates array of fake IAsset with different protocols
+     * @param count Number of assets to create
+     */
+    static createMixProtocolTestAssets() {
+        const assets = [];
+        assets.push(MockFactory.createTestAsset(&quot;0&quot;));
+        assets.push(MockFactory.createWebTestAsset(&quot;1&quot;));
+        return assets;
+    }
+    /**
+     * Creates fake IAssetMetadata
+     * @param asset Test asset
+     */
+    static createTestAssetMetadata(asset) {
+        return {
+            asset,
+            regions: [],
+            timestamp: null,
+        };
+    }
+    /**
+     * Creates array of fake IProject
+     * @param count Number of projects
+     */
+    static createTestProjects(count = 10) {
+        const projects = [];
+        for (let i = 1; i &lt;= count; i++) {
+            projects.push(MockFactory.createTestProject(i.toString()));
+        }
+        return projects;
+    }
+    /**
+     * Creates fake IProject
+     * @param name Name of project. project.id = `project-${name}` and project.name = `Project ${name}`
+     */
+    static createTestProject(name = &quot;test&quot;) {
+        const connection = MockFactory.createTestConnection(name);
+        return {
+            id: `project-${name}`,
+            name: `Project ${name}`,
+            securityToken: `Security-Token-${name}`,
+            assets: {},
+            exportFormat: MockFactory.exportFormat(),
+            sourceConnection: connection,
+            targetConnection: connection,
+            tags: MockFactory.createTestTags(),
+            videoSettings: MockFactory.createVideoSettings(),
+            autoSave: true,
+        };
+    }
+    /**
+     * Creates fake IProjectVideoSettings with default values
+     */
+    static createVideoSettings() {
+        return { frameExtractionRate: 15 };
+    }
+    /**
+     * Creates fake IAzureCloudStorageOptions
+     */
+    static createAzureOptions() {
+        return {
+            accountName: &quot;myaccount&quot;,
+            containerName: &quot;container0&quot;,
+            sas: &quot;sas&quot;,
+            createContainer: undefined,
+        };
+    }
+    static createLocalFileSystemOptions() {
+        return {
+            folderPath: &quot;C:\\projects\\vott\\project&quot;,
+        };
+    }
+    /**
+     * Creates fake response for Azure Blob Storage `listContainers` function
+     */
+    static createAzureStorageListContainersResponse() {
+        return {
+            containerItems: MockFactory.createAzureContainers(),
+            nextMarker: null,
+        };
+    }
+    /**
+     * Creates fake Azure containers
+     * @param count Number of containers
+     */
+    static createAzureContainers(count = 3) {
+        const result = [];
+        for (let i = 0; i &lt; count; i++) {
+            result.push({
+                name: `container${i}`,
+                blobs: MockFactory.createAzureBlobs(i),
+            });
+        }
+        return { containerItems: result };
+    }
+    /**
+     * Creates fake data for testing Azure Cloud Storage
+     */
+    static createAzureData() {
+        const options = MockFactory.createAzureOptions();
+        return {
+            blobName: &quot;file1.jpg&quot;,
+            blobText: &quot;This is the content&quot;,
+            fileType: &quot;image/jpg&quot;,
+            containerName: options.containerName,
+            containers: MockFactory.createAzureContainers(),
+            blobs: MockFactory.createAzureBlobs(),
+            options,
+        };
+    }
+    /**
+     * Creates fake Blob object
+     * @param name Name of blob
+     * @param content Content of blob
+     * @param fileType File type of blob
+     */
+    static blob(name, content, fileType) {
+        const blob = new Blob([content], { type: fileType });
+        blob[&quot;name&quot;] = name;
+        return blob;
+    }
+    /**
+     * Creates fake Azure Blobs
+     * @param id ID of blob
+     * @param count Number of blobs
+     */
+    static createAzureBlobs(id = 1, count = 10) {
+        const result = [];
+        for (let i = 0; i &lt; count; i++) {
+            result.push({
+                name: `blob-${id}-${i}.jpg`,
+            });
+        }
+        return { segment: { blobItems: result } };
+    }
+    /**
+     * Create array of fake ITag
+     * @param count Number of tags
+     */
+    static createTestTags(count = 5) {
+        const tags = [];
+        for (let i = 0; i &lt; count; i++) {
+            tags.push(MockFactory.createTestTag(i.toString()));
+        }
+        return tags;
+    }
+    /**
+     * Create fake ITag with random color
+     * @param name Name of tag
+     */
+    static createTestTag(name = &quot;Test Tag&quot;) {
+        return {
+            name: `Tag ${name}`,
+            color: MockFactory.randomColor(),
+        };
+    }
+    /**
+     * Create array of IConnection, half Azure Blob connections, half Local File Storage connections
+     * @param count Number of connections
+     */
+    static createTestConnections(count = 10) {
+        const connections = [];
+        for (let i = 1; i &lt;= (count / 2); i++) {
+            connections.push(MockFactory.createTestCloudConnection(i.toString()));
+        }
+        for (let i = (count / 2) + 1; i &lt;= count; i++) {
+            connections.push(MockFactory.createTestConnection(i.toString()));
+        }
+        return connections;
+    }
+    /**
+     *
+     * @param name Name of connection
+     */
+    static createTestCloudConnection(name = &quot;test&quot;) {
+        return MockFactory.createTestConnection(name, &quot;azureBlobStorage&quot;);
+    }
+    /**
+     * Create array of IConnection of type Bing Image Search
+     * @param count Number of connections
+     */
+    static createTestBingConnections(count = 10) {
+        const connections = [];
+        for (let i = 1; i &lt;= count; i++) {
+            connections.push(MockFactory.createTestConnection(i.toString(), &quot;bingImageSearch&quot;));
+        }
+        return connections;
+    }
+    /**
+     * Create fake IConnection
+     * @param name Name of connection - default test
+     * @param providerType Type of Connection - default local file system
+     */
+    static createTestConnection(name = &quot;test&quot;, providerType = &quot;localFileSystemProxy&quot;) {
+        return {
+            id: `connection-${name}`,
+            name: `Connection ${name}`,
+            description: `Description for Connection ${name}`,
+            providerType,
+            providerOptions: MockFactory.getProviderOptions(providerType),
+        };
+    }
+    /**
+     * Create fake IBingImageSearchOptions
+     */
+    static createBingOptions() {
+        return {
+            apiKey: &quot;key&quot;,
+            aspectRatio: BingImageSearchAspectRatio.All,
+            query: &quot;test&quot;,
+        };
+    }
+    /**
+     * Get options for asset provider
+     * @param providerType asset provider type
+     */
+    static getProviderOptions(providerType) {
+        switch (providerType) {
+            case &quot;localFileSystemProxy&quot;:
+                return MockFactory.createLocalFileSystemOptions();
+            case &quot;azureBlobStorage&quot;:
+                return MockFactory.createAzureOptions();
+            case &quot;bingImageSearch&quot;:
+                return MockFactory.createBingOptions();
+            default:
+                return {};
+        }
+    }
+    /**
+     * Create array of filename strings
+     */
+    static createFileList() {
+        return [&quot;file1.jpg&quot;, &quot;file2.jpg&quot;, &quot;file3.jpg&quot;];
+    }
+    /**
+     * Create fake Storage Provider of storage type Cloud
+     * All functions are jest.fn to test for being called
+     * readText resolves to &quot;Fake text&quot;
+     * listFiles resolves with list of fake files
+     */
+    static createStorageProvider() {
+        return {
+            storageType: StorageType.Cloud,
+            initialize: jest.fn(() =&gt; Promise.resolve()),
+            readText: jest.fn(() =&gt; Promise.resolve(&quot;Fake text&quot;)),
+            readBinary: jest.fn(),
+            deleteFile: jest.fn(),
+            writeText: jest.fn(),
+            writeBinary: jest.fn(),
+            listFiles: jest.fn(() =&gt; Promise.resolve(MockFactory.createFileList())),
+            listContainers: jest.fn(),
+            createContainer: jest.fn(),
+            deleteContainer: jest.fn(),
+            getAssets: jest.fn(),
+        };
+    }
+    /**
+     * Creates a storage provider from IConnection
+     * @param connection Connection with which to create Storage Provider
+     */
+    static createStorageProviderFromConnection(connection) {
+        return Object.assign({}, MockFactory.createStorageProvider(), { storageType: MockFactory.getStorageType(connection.providerType) });
+    }
+    /**
+     * Create fake asset provider
+     */
+    static createAssetProvider() {
+        return {
+            initialize: jest.fn(() =&gt; Promise.resolve()),
+            getAssets(containerName) {
+                throw new Error(&quot;Method not implemented.&quot;);
+            },
+        };
+    }
+    /**
+     * Create fake IExportFormat of provider type vottJson
+     */
+    static exportFormat() {
+        return {
+            providerType: &quot;vottJson&quot;,
+            providerOptions: {
+                assetState: ExportAssetState.Tagged,
+            },
+        };
+    }
+    /**
+     * Creates array of IExportProviderRegistrationOptions for the different providers
+     * vottJson, tensorFlowPascalVOC, azureCustomVision
+     */
+    static createExportProviderRegistrations() {
+        const registrations = [];
+        registrations.push(MockFactory.createExportProviderRegistration(&quot;vottJson&quot;));
+        registrations.push(MockFactory.createExportProviderRegistration(&quot;tensorFlowPascalVOC&quot;));
+        registrations.push(MockFactory.createExportProviderRegistration(&quot;azureCustomVision&quot;));
+        return registrations;
+    }
+    /**
+     * Create array of IStorageProviderRegistrationOptions
+     * @param count Number of storage provider registrations to create
+     */
+    static createStorageProviderRegistrations(count = 10) {
+        const registrations = [];
+        for (let i = 1; i &lt;= count; i++) {
+            registrations.push(MockFactory.createStorageProviderRegistration(i.toString()));
+        }
+        return registrations;
+    }
+    /**
+     * Create array of IAssetProviderRegistrationOptions
+     * @param count Number of Asset Provider Registrations to create
+     */
+    static createAssetProviderRegistrations(count = 10) {
+        const registrations = [];
+        for (let i = 1; i &lt;= count; i++) {
+            registrations.push(MockFactory.createAssetProviderRegistration(i.toString()));
+        }
+        return registrations;
+    }
+    /**
+     *
+     * @param name
+     */
+    static createExportProviderRegistration(name) {
+        const registration = {
+            name,
+            displayName: `${name} display name`,
+            description: `${name} short description`,
+            factory: () =&gt; null,
+        };
+        return registration;
+    }
+    /**
+     * Creates fake IStorageProviderRegistrationOptions
+     * @param name Name of Storage Provider
+     */
+    static createStorageProviderRegistration(name) {
+        const registration = {
+            name,
+            displayName: `${name} display name`,
+            description: `${name} short description`,
+            factory: () =&gt; null,
+        };
+        return registration;
+    }
+    static createTestCanvas() {
+        const canvasProps = {
+            selectedAsset: this.createTestAssetMetadata(this.createTestAsset(&quot;test-asset&quot;)),
+            onAssetMetadataChanged: jest.fn(),
+            editorMode: EditorMode.Rectangle,
+        };
+        return new Canvas({ canvasProps }, {});
+    }
+    static createTestRegion(id = null) {
+        const testRegion = {
+            boundingBox: {
+                height: 100,
+                width: 100,
+                left: 0,
+                top: 0,
+            },
+            points: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }],
+            tags: [],
+            type: &quot;RECTANGLE&quot;,
+        };
+        if (id) {
+            testRegion.id = id;
+        }
+        return testRegion;
+    }
+    /**
+     * Creates fake IAssetProviderRegistrationOptions
+     * @param name Name of asset provider
+     */
+    static createAssetProviderRegistration(name) {
+        const registration = {
+            name,
+            displayName: `${name} display name`,
+            description: `${name} short description`,
+            factory: () =&gt; null,
+        };
+        return registration;
+    }
+    /**
+     * Creates fake IProjectService
+     */
+    static projectService() {
+        return {
+            load: jest.fn((project) =&gt; Promise.resolve(project)),
+            save: jest.fn((project) =&gt; Promise.resolve(project)),
+            delete: jest.fn((project) =&gt; Promise.resolve()),
+            isDuplicate: jest.fn((project, projectList) =&gt; true),
+        };
+    }
+    /**
+     * Creates fake IProjectActions with jest functions for each action
+     */
+    static projectActions() {
+        return {
+            loadProject: jest.fn((project) =&gt; Promise.resolve()),
+            saveProject: jest.fn((project) =&gt; Promise.resolve()),
+            deleteProject: jest.fn((project) =&gt; Promise.resolve()),
+            closeProject: jest.fn(() =&gt; Promise.resolve()),
+            loadAssets: jest.fn((project) =&gt; Promise.resolve()),
+            exportProject: jest.fn((project) =&gt; Promise.resolve()),
+            loadAssetMetadata: jest.fn((project, asset) =&gt; Promise.resolve()),
+            saveAssetMetadata: jest.fn((project, assetMetadata) =&gt; Promise.resolve()),
+        };
+    }
+    /**
+     * Creates fake IConnectionActions with jest functions for each action
+     */
+    static connectionActions() {
+        return {
+            loadConnection: jest.fn((connection) =&gt; Promise.resolve()),
+            saveConnection: jest.fn((connection) =&gt; Promise.resolve()),
+            deleteConnection: jest.fn((connection) =&gt; Promise.resolve()),
+        };
+    }
+    /**
+     * Creates fake IAppSettings
+     */
+    static appSettings() {
+        const securityTokens = MockFactory.createSecurityTokens();
+        return {
+            devToolsEnabled: false,
+            securityTokens: [
+                ...securityTokens,
+                MockFactory.createSecurityToken(&quot;TestProject&quot;),
+            ],
+        };
+    }
+    /**
+     * Creates a security token used for testing
+     * @param nameSuffix The name suffix to apply to the security token name
+     */
+    static createSecurityToken(nameSuffix) {
+        return {
+            name: `Security-Token-${nameSuffix}`,
+            key: generateKey(),
+        };
+    }
+    /**
+     * Creates test security tokens
+     * @param count The number of tokens to generate (default: 10)
+     */
+    static createSecurityTokens(count = 10) {
+        const securityTokens = [];
+        for (let i = 1; i &lt;= 10; i++) {
+            securityTokens.push(MockFactory.createSecurityToken(i.toString()));
+        }
+        return securityTokens;
+    }
+    /**
+     * Creates fake IProjectSettingsPageProps
+     * @param projectId Current project ID
+     */
+    static projectSettingsProps(projectId) {
+        return Object.assign({}, MockFactory.pageProps(projectId, &quot;settings&quot;), { connections: MockFactory.createTestConnections(), appSettings: MockFactory.appSettings() });
+    }
+    /**
+     * Creates fake IEditorPageProps
+     * @param projectId Current project ID
+     */
+    static editorPageProps(projectId) {
+        return Object.assign({ actions: projectActions }, MockFactory.pageProps(projectId, &quot;edit&quot;));
+    }
+    /**
+     * Creates fake IApplicationState
+     */
+    static initialState(state) {
+        const testProjects = MockFactory.createTestProjects();
+        const testConnections = MockFactory.createTestConnections();
+        return Object.assign({ appSettings: MockFactory.appSettings(), connections: testConnections, recentProjects: testProjects, currentProject: testProjects[0] }, state, { appError: null });
+    }
+    /**
+     * Runs function that updates the UI, and flushes call stack
+     * @param func - The function that updates the UI
+     */
+    static flushUi(func = null) {
+        return new Promise((resolve) =&gt; {
+            if (func) {
+                func();
+            }
+            setImmediate(resolve);
+        });
+    }
+    /**
+     * Runs and waits for a condidtion to be met and resolves a promise
+     * @param predicate The predicate to evaluate the condition
+     * @param interval The interval to check the value
+     */
+    static waitForCondition(predicate, interval = 100) {
+        return new Promise((resolve, reject) =&gt; {
+            const handle = setInterval(() =&gt; {
+                try {
+                    if (predicate()) {
+                        clearInterval(handle);
+                        resolve();
+                    }
+                }
+                catch (e) {
+                    reject(e);
+                }
+            }, interval);
+        });
+    }
+    static createAzureCustomVisionTags(count = 10) {
+        const tags = [];
+        for (let i = 1; i &lt;= count; i++) {
+            tags.push(MockFactory.createAzureCustomVisionTag(`Tag ${i}`));
+        }
+        return tags;
+    }
+    static createAzureCustomVisionTag(name) {
+        return {
+            id: shortid.generate(),
+            name,
+            description: `Description for ${name}`,
+            imageCount: 0,
+        };
+    }
+    static createAzureCustomVisionRegions(count = 10) {
+        const regions = [];
+        for (let i = 1; i &lt;= count; i++) {
+            regions.push(MockFactory.createAzureCustomVisionRegion());
+        }
+        return regions;
+    }
+    static createAzureCustomVisionRegion() {
+        return {
+            imageId: shortid.generate(),
+            tagId: shortid.generate(),
+            left: 0,
+            top: 0,
+            width: 1,
+            height: 1,
+        };
+    }
+    static pageProps(projectId, method) {
+        return {
+            project: null,
+            recentProjects: MockFactory.createTestProjects(),
+            projectActions: projectActions,
+            applicationActions: applicationActions,
+            history: MockFactory.history(),
+            location: MockFactory.location(),
+            match: MockFactory.match(projectId, method),
+        };
+    }
+    /**
+     * Creates fake match for page properties
+     * @param projectId Current project id
+     * @param method URL method for project (export, edit, settings)
+     */
+    static match(projectId, method) {
+        return {
+            params: {
+                projectId,
+            },
+            isExact: true,
+            path: `https://localhost:3000/projects/${projectId}/${method}`,
+            url: `https://localhost:3000/projects/${projectId}/${method}`,
+        };
+    }
+    /**
+     * Creates fake history for page properties
+     */
+    static history() {
+        return {
+            length: 0,
+            action: null,
+            location: null,
+            push: jest.fn(),
+            replace: jest.fn(),
+            go: jest.fn(),
+            goBack: jest.fn(),
+            goForward: jest.fn(),
+            block: jest.fn(),
+            listen: jest.fn(),
+            createHref: jest.fn(),
+        };
+    }
+    /**
+     * Creates fake location for page properties
+     */
+    static location() {
+        return {
+            hash: null,
+            pathname: null,
+            search: null,
+            state: null,
+        };
+    }
+    /**
+     * Generates a random color string
+     */
+    static randomColor() {
+        return [
+            &quot;#&quot;,
+            MockFactory.randomColorSegment(),
+            MockFactory.randomColorSegment(),
+            MockFactory.randomColorSegment(),
+        ].join(&quot;&quot;);
+    }
+    /**
+     * Generates random color segment
+     */
+    static randomColorSegment() {
+        const num = Math.floor(Math.random() * 255);
+        return num.toString(16);
+    }
+    /**
+     * Gets StorageType for asset providers
+     * @param providerType Asset Providet type
+     */
+    static getStorageType(providerType) {
+        switch (providerType) {
+            case &quot;azureBlobStorage&quot;:
+                return StorageType.Cloud;
+            case &quot;localFileSystemProxy&quot;:
+                return StorageType.Local;
+            default:
+                return StorageType.Other;
+        }
+    }
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

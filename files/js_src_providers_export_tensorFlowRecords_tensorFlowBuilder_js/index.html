@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - js-src/providers/export/tensorFlowRecords/tensorFlowBuilder.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>js-src/providers/export/tensorFlowRecords/tensorFlowBuilder.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">73.39</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">107</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">27.79</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">0.71</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">import { TFRecordsImageMessage, Features, Feature, BytesList, Int64List, FloatList } from &quot;./tensorFlowRecordsProtoBuf_pb&quot;;
+import { crc32c, maskCrc, getInt64Buffer, getInt32Buffer, textEncode } from &quot;./tensorFlowHelpers&quot;;
+/**
+ * @name - TFRecords Feature Type
+ * @description - Defines the type of TFRecords Feature
+ * @member String - Specifies a Feature as a string
+ * @member Binary - Specifies a Feature as a binary UInt8Array
+ * @member Int64 - Specifies a Feature as a Int64
+ * @member Float - Specifies a Feature as a Float
+ */
+export var FeatureType;
+(function (FeatureType) {
+    FeatureType[FeatureType[&quot;String&quot;] = 0] = &quot;String&quot;;
+    FeatureType[FeatureType[&quot;Binary&quot;] = 1] = &quot;Binary&quot;;
+    FeatureType[FeatureType[&quot;Int64&quot;] = 2] = &quot;Int64&quot;;
+    FeatureType[FeatureType[&quot;Float&quot;] = 3] = &quot;Float&quot;;
+})(FeatureType || (FeatureType = {}));
+/**
+ * @name - TFRecords Builder Class
+ * @description - Create a TFRecords object
+ */
+export class TFRecordsBuilder {
+    /**
+     * @records - An Array of TFRecord Buffer created with releaseTFRecord()
+     * @description - Return a Buffer representation of a TFRecords object
+     */
+    static buildTFRecords(records) {
+        return Buffer.concat(records.map((record) =&gt; {
+            const length = record.length;
+            // Get TFRecords CRCs for TFRecords Header and Footer
+            const bufferLength = getInt64Buffer(length);
+            const bufferLengthMaskedCRC = getInt32Buffer(maskCrc(crc32c(bufferLength)));
+            const bufferDataMaskedCRC = getInt32Buffer(maskCrc(crc32c(record)));
+            // Concatenate all TFRecords Header, Data and Footer buffer
+            return Buffer.concat([bufferLength,
+                bufferLengthMaskedCRC,
+                record,
+                bufferDataMaskedCRC]);
+        }));
+    }
+    constructor() {
+        this.features = new Features();
+    }
+    /**
+     * @key - Feature Key
+     * @type - Feature Type
+     * @value - A Int64 | Float | String | Binary value
+     * @description - Add a Int64 | Float | String | Binary value feature
+     */
+    addFeature(key, type, value) {
+        this.addArrayFeature(key, type, [value]);
+    }
+    /**
+     * @key - Feature Key
+     * @type - Feature Type
+     * @value - An Array of Int64 | Float | String | Binary values
+     * @description - Add an Array of Int64 | Float | String | Binary values feature
+     */
+    addArrayFeature(key, type, values) {
+        const feature = new Feature();
+        switch (type) {
+            case FeatureType.String:
+                const stringList = new BytesList();
+                values.forEach((value) =&gt; {
+                    stringList.addValue(textEncode(value));
+                });
+                feature.setBytesList(stringList);
+                break;
+            case FeatureType.Binary:
+                const byteList = new BytesList();
+                values.forEach((value) =&gt; {
+                    byteList.addValue(value);
+                });
+                feature.setBytesList(byteList);
+                break;
+            case FeatureType.Int64:
+                const intList = new Int64List();
+                values.forEach((value) =&gt; {
+                    intList.addValue(value);
+                });
+                feature.setInt64List(intList);
+                break;
+            case FeatureType.Float:
+                const floatList = new FloatList();
+                values.forEach((value) =&gt; {
+                    floatList.addValue(value);
+                });
+                feature.setFloatList(floatList);
+                break;
+            default:
+                break;
+        }
+        const featuresMap = this.features.getFeatureMap();
+        featuresMap.set(key, feature);
+    }
+    /**
+     * @description - Return a Buffer representation of a single TFRecord
+     */
+    build() {
+        // Get Protocol Buffer TFRecords object with exported image features
+        const imageMessage = new TFRecordsImageMessage();
+        imageMessage.setContext(this.features);
+        // Serialize Protocol Buffer in a buffer
+        const bytes = imageMessage.serializeBinary();
+        return new Buffer(bytes);
+    }
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

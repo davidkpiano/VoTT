@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - js-src/providers/storage/azureBlobStorage.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>js-src/providers/storage/azureBlobStorage.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">77.61</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">297</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">65.07</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">2.36</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var __awaiter = (this &amp;&amp; this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator[&quot;throw&quot;](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import { AssetType, StorageType } from &quot;../../models/applicationState&quot;;
+import { AssetService } from &quot;../../services/assetService&quot;;
+import { TokenCredential, AnonymousCredential, ContainerURL, StorageURL, ServiceURL, Aborter, BlockBlobURL } from &quot;@azure/storage-blob&quot;;
+/**
+ * Storage Provider for Azure Blob Storage
+ */
+export class AzureBlobStorage {
+    constructor(options) {
+        this.options = options;
+        /**
+         * Storage type
+         * @returns - StorageType.Cloud
+         */
+        this.storageType = StorageType.Cloud;
+    }
+    /**
+     * Initialize connection to Blob Storage account &amp; container
+     * If `createContainer` was specified in options, this function
+     * creates the container. Otherwise, validates that container
+     * is contained in list of containers
+     * @throws - Error if container does not exist or not able to
+     * connect to Azure Blob Storage
+     */
+    initialize() {
+        return new Promise((resolve, reject) =&gt; __awaiter(this, void 0, void 0, function* () {
+            try {
+                const containerName = this.options.containerName;
+                if (this.options.createContainer) {
+                    yield this.createContainer(containerName);
+                    resolve();
+                }
+                else {
+                    const containers = yield this.listContainers(null);
+                    if (containers.indexOf(containerName) &gt; -1) {
+                        resolve();
+                    }
+                    else {
+                        throw new Error(`Container &quot;${containerName}&quot; does not exist`);
+                    }
+                }
+            }
+            catch (e) {
+                reject(e);
+            }
+        }));
+    }
+    /**
+     * Reads text from specified blob
+     * @param blobName - Name of blob in container
+     */
+    readText(blobName) {
+        return new Promise((resolve, reject) =&gt; __awaiter(this, void 0, void 0, function* () {
+            try {
+                const blockBlobURL = this.getBlockBlobURL(blobName);
+                const downloadResponse = yield blockBlobURL.download(Aborter.none, 0);
+                const downloadString = yield this.bodyToString(downloadResponse);
+                resolve(downloadString);
+            }
+            catch (e) {
+                reject(e);
+            }
+        }));
+    }
+    /**
+     * Reads Buffer from specified blob
+     * @param blobName - Name of blob in container
+     */
+    readBinary(blobName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const text = yield this.readText(blobName);
+            return Buffer.from(text);
+        });
+    }
+    /**
+     * Writes text to blob in container
+     * @param blobName - Name of blob in container
+     * @param content - Content to write to blob (string or Buffer)
+     */
+    writeText(blobName, content) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) =&gt; __awaiter(this, void 0, void 0, function* () {
+                try {
+                    const blockBlobURL = this.getBlockBlobURL(blobName);
+                    const uploadBlobResponse = yield blockBlobURL.upload(Aborter.none, content, content.length);
+                    resolve();
+                }
+                catch (e) {
+                    reject(e);
+                }
+            }));
+        });
+    }
+    /**
+     * Writes buffer to blob in container
+     * @param blobName - Name of blob in container
+     * @param content - Buffer to write to blob
+     */
+    writeBinary(blobName, content) {
+        return this.writeText(blobName, content);
+    }
+    /**
+     * Deletes file from container
+     * @param blobName - Name of blob in container
+     */
+    deleteFile(blobName) {
+        return new Promise((resolve, reject) =&gt; __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield this.getBlockBlobURL(blobName).delete(Aborter.none);
+                resolve();
+            }
+            catch (e) {
+                reject(e);
+            }
+        }));
+    }
+    /**
+     * Lists files in container
+     * @param path - NOT USED IN CURRENT IMPLEMENTATION. Only uses container
+     * as specified in Azure Cloud Storage Options. Included to satisfy
+     * Storage Provider interface
+     * @param ext - Extension of files to filter on when retrieving files
+     * from container
+     */
+    listFiles(path, ext) {
+        return new Promise((resolve, reject) =&gt; __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = [];
+                let marker;
+                const containerURL = this.getContainerURL();
+                do {
+                    const listBlobsResponse = yield containerURL.listBlobFlatSegment(Aborter.none, marker);
+                    marker = listBlobsResponse.nextMarker;
+                    for (const blob of listBlobsResponse.segment.blobItems) {
+                        if ((ext &amp;&amp; blob.name.endsWith(ext)) || !ext) {
+                            result.push(blob.name);
+                        }
+                    }
+                } while (marker);
+                resolve(result);
+            }
+            catch (e) {
+                reject(e);
+            }
+        }));
+    }
+    /**
+     * Lists the containers with in the Azure Blob Storage account
+     * @param path - NOT USED IN CURRENT IMPLEMENTATION. Lists containers in storage account.
+     * Path does not really make sense in this scenario. Included to satisfy interface
+     */
+    listContainers(path) {
+        return new Promise((resolve, reject) =&gt; __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = [];
+                let marker;
+                do {
+                    const listContainersResponse = yield this.getServiceURL().listContainersSegment(Aborter.none, marker);
+                    marker = listContainersResponse.nextMarker;
+                    for (const container of listContainersResponse.containerItems) {
+                        result.push(container.name);
+                    }
+                } while (marker);
+                resolve(result);
+            }
+            catch (e) {
+                reject(e);
+            }
+        }));
+    }
+    /**
+     * Creates container specified in Azure Cloud Storage options
+     * @param containerName - NOT USED IN CURRENT IMPLEMENTATION. Because `containerName`
+     * is a required attribute of the Azure Cloud Storage options used to instantiate the
+     * provider, this function creates that container. Included to satisfy interface
+     */
+    createContainer(containerName) {
+        return new Promise((resolve, reject) =&gt; __awaiter(this, void 0, void 0, function* () {
+            try {
+                const containerURL = this.getContainerURL();
+                yield containerURL.create(Aborter.none);
+                resolve();
+            }
+            catch (e) {
+                reject(e);
+            }
+        }));
+    }
+    /**
+     * Deletes container specified in Azure Cloud Storage options
+     * @param containerName - NOT USED IN CURRENT IMPLEMENTATION. Because `containerName`
+     * is a required attribute of the Azure Cloud Storage options used to instantiate the
+     * provider, this function creates that container. Included to satisfy interface
+     */
+    deleteContainer(containerName) {
+        return new Promise((resolve, reject) =&gt; __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield this.getContainerURL().delete(Aborter.none);
+                resolve();
+            }
+            catch (e) {
+                reject(e);
+            }
+        }));
+    }
+    /**
+     * Retrieves assets from Azure Blob Storage container
+     * @param containerName - Container from which to retrieve assets. Defaults to
+     * container specified in Azure Cloud Storage options
+     */
+    getAssets(containerName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            containerName = (containerName) ? containerName : this.options.containerName;
+            const files = yield this.listFiles(containerName);
+            const result = [];
+            for (const file of files) {
+                const url = this.getUrl(file);
+                const asset = AssetService.createAssetFromFilePath(url, this.getFileName(url));
+                if (asset.type !== AssetType.Unknown) {
+                    result.push(asset);
+                }
+            }
+            return result;
+        });
+    }
+    /**
+     *
+     * @param url - URL for Azure Blob
+     */
+    getFileName(url) {
+        const pathParts = url.split(&quot;/&quot;);
+        return pathParts[pathParts.length - 1].split(&quot;?&quot;)[0];
+    }
+    /**
+     * @returns - URL for Azure Blob Storage account with SAS token appended if specified
+     */
+    getAccountUrl() {
+        return `https://${this.options.accountName}.blob.core.windows.net` + (this.options.sas || &quot;&quot;);
+    }
+    /**
+     * Gets a Credential object. OAuthToken if specified in options, anonymous
+     * credential otherwise (uses the SAS token)
+     * @returns - Credential object from Azure Storage SDK
+     */
+    getCredential() {
+        if (this.options.oauthToken) {
+            return new TokenCredential(this.options.oauthToken);
+        }
+        else {
+            return new AnonymousCredential();
+        }
+    }
+    getServiceURL() {
+        const credential = this.getCredential();
+        const pipeline = StorageURL.newPipeline(credential);
+        const accountUrl = this.getAccountUrl();
+        const serviceUrl = new ServiceURL(accountUrl, pipeline);
+        return serviceUrl;
+    }
+    getContainerURL(serviceURL, containerName) {
+        return ContainerURL.fromServiceURL((serviceURL) ? serviceURL : this.getServiceURL(), (containerName) ? containerName : this.options.containerName);
+    }
+    getBlockBlobURL(blobName) {
+        const containerURL = this.getContainerURL();
+        return BlockBlobURL.fromContainerURL(containerURL, blobName);
+    }
+    getUrl(blobName) {
+        return this.getBlockBlobURL(blobName).url;
+    }
+    bodyToString(response, 
+    // tslint:disable-next-line:variable-name
+    _length) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const blob = yield response.blobBody;
+            return this.blobToString(blob);
+        });
+    }
+    blobToString(blob) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const fileReader = new FileReader();
+            return new Promise((resolve, reject) =&gt; {
+                fileReader.onloadend = (ev) =&gt; {
+                    resolve(ev.target.result);
+                };
+                fileReader.onerror = reject;
+                fileReader.readAsText(blob);
+            });
+        });
+    }
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

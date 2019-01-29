@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - js-src/services/assetService.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>js-src/services/assetService.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">72.34</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">137</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">42.33</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.32</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">var __awaiter = (this &amp;&amp; this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator[&quot;throw&quot;](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import MD5 from &quot;md5.js&quot;;
+import Guard from &quot;../common/guard&quot;;
+import { AssetType, AssetState } from &quot;../models/applicationState&quot;;
+import { AssetProviderFactory } from &quot;../providers/storage/assetProviderFactory&quot;;
+import { StorageProviderFactory } from &quot;../providers/storage/storageProviderFactory&quot;;
+import { constants } from &quot;../common/constants&quot;;
+/**
+ * @name - Asset Service
+ * @description - Functions for dealing with project assets
+ */
+export class AssetService {
+    constructor(project) {
+        this.project = project;
+        Guard.null(project);
+    }
+    /**
+     * Create IAsset from filePath
+     * @param filePath - filepath of asset
+     * @param fileName - name of asset
+     */
+    static createAssetFromFilePath(filePath, fileName) {
+        Guard.emtpy(filePath);
+        const md5Hash = new MD5().update(filePath).digest(&quot;hex&quot;);
+        const pathParts = filePath.indexOf(&quot;\\&quot;) &gt; -1 ? filePath.split(&quot;\\&quot;) : filePath.split(&quot;/&quot;);
+        fileName = fileName || pathParts[pathParts.length - 1];
+        const fileNameParts = fileName.split(&quot;.&quot;);
+        const assetFormat = fileNameParts[fileNameParts.length - 1];
+        const assetType = this.getAssetType(assetFormat);
+        return {
+            id: md5Hash,
+            format: assetFormat,
+            state: AssetState.NotVisited,
+            type: assetType,
+            name: fileName,
+            path: filePath,
+            size: null,
+        };
+    }
+    /**
+     * Get Asset Type from format (file extension)
+     * @param format - File extension of asset
+     */
+    static getAssetType(format) {
+        switch (format.toLowerCase()) {
+            case &quot;gif&quot;:
+            case &quot;jpg&quot;:
+            case &quot;jpeg&quot;:
+            case &quot;tif&quot;:
+            case &quot;tiff&quot;:
+            case &quot;png&quot;:
+            case &quot;bmp&quot;:
+                return AssetType.Image;
+            case &quot;mp4&quot;:
+            case &quot;mov&quot;:
+            case &quot;avi&quot;:
+            case &quot;m4v&quot;:
+            case &quot;mpg&quot;:
+            case &quot;wmv&quot;:
+                return AssetType.Video;
+            default:
+                return AssetType.Unknown;
+        }
+    }
+    /**
+     * Get Asset Provider from project&#039;s source connction
+     */
+    get assetProvider() {
+        if (!this.assetProviderInstance) {
+            this.assetProviderInstance = AssetProviderFactory.create(this.project.sourceConnection.providerType, this.project.sourceConnection.providerOptions);
+            return this.assetProviderInstance;
+        }
+    }
+    /**
+     * Get Storage Provider from project&#039;s target connection
+     */
+    get storageProvider() {
+        if (!this.storageProviderInstance) {
+            this.storageProviderInstance = StorageProviderFactory.create(this.project.targetConnection.providerType, this.project.targetConnection.providerOptions);
+        }
+        return this.storageProviderInstance;
+    }
+    /**
+     * Get assets from provider
+     */
+    getAssets() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const assets = yield this.assetProvider.getAssets();
+            return assets.map((asset) =&gt; {
+                if (!asset.path.toLowerCase().startsWith(&quot;http://&quot;) &amp;&amp; !asset.path.toLowerCase().startsWith(&quot;https://&quot;)) {
+                    asset.path = &quot;file:&quot; + asset.path;
+                }
+                return asset;
+            });
+        });
+    }
+    /**
+     * Save metadata for asset
+     * @param metadata - Metadata for asset
+     */
+    save(metadata) {
+        return __awaiter(this, void 0, void 0, function* () {
+            Guard.null(metadata);
+            const fileName = `${metadata.asset.id}${constants.assetMetadataFileExtension}`;
+            yield this.storageProvider.writeText(fileName, JSON.stringify(metadata, null, 4));
+            return metadata;
+        });
+    }
+    /**
+     * Get metadata for asset
+     * @param asset - Asset for which to retrieve metadata
+     */
+    getAssetMetadata(asset) {
+        return __awaiter(this, void 0, void 0, function* () {
+            Guard.null(asset);
+            const fileName = `${asset.id}${constants.assetMetadataFileExtension}`;
+            try {
+                const json = yield this.storageProvider.readText(fileName);
+                return JSON.parse(json);
+            }
+            catch (err) {
+                return {
+                    asset: Object.assign({}, asset),
+                    regions: [],
+                    timestamp: null,
+                };
+            }
+        });
+    }
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
